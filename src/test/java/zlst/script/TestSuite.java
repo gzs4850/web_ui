@@ -1,11 +1,11 @@
 package zlst.script;
 
-import java.lang.reflect.Method;
-
-import org.apache.log4j.xml.DOMConfigurator;
-import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Parameters;
+import org.apache.log4j.BasicConfigurator;
+import org.testng.AssertJUnit;
+import java.lang.reflect.Method;
 
 import zlst.common.Constants;
 import zlst.common.KeyWordsAction;
@@ -18,19 +18,23 @@ public class TestSuite {
 	public static String keyword;
 	public static String value;
 	public static String locatorExpression;
-	public static KeyWordsAction keyWordsAction;
+	public static KeyWordsAction keyWordsaction;
 	public static int testStep;
 	public static int testLastStep;
 	public static String testCaseID;
 	public static String testCaseRunFlag;
 	public static boolean testResult;
 	
+	@Parameters({"browserName"})
 	@Test
-	public void testTestSuite(){
+	public void testTestSuite() throws InterruptedException{
+		
+		//Logger Log = Logger.getLogger(TestSuite.class);
+		
 		//声明一个关键字动作对象
-		keyWordsAction = new KeyWordsAction();
+		keyWordsaction = new KeyWordsAction();
 		//使用Java的反射机制获取KeyWordsAction类中的所有方法对象
-		method = keyWordsAction.getClass().getMethods();
+		method = keyWordsaction.getClass().getMethods();
 		//定义excel文件路径
 		String excelFilePath = Constants.Path_ExcelFile;
 		//设定读取excel文件
@@ -55,16 +59,33 @@ public class TestSuite {
 				testLastStep = ExcelUtil.getTestCaseLastStepRow(Constants.Sheet_TestSteps, testCaseID, testStep);
 				
 				for(;testStep < testLastStep;testStep++){
+					System.out.println("-------正在执行第"+testStep+"行的测试步骤--------");
 					//获取关键字
 					keyword = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_KeyWordAction);
 					Log.info("从测试步骤sheet中读取的关键字是："+keyword);
+					System.out.println("从测试步骤sheet中读取的关键字是："+keyword);
 					//获取定位表达式
 					locatorExpression = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_LocatorExpression);
+					Log.info("从测试步骤sheet中读取的定位表达式是："+locatorExpression);
+					System.out.println("从测试步骤sheet中读取的定位表达式是："+locatorExpression);
 					//获取操作值
 					value = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_ActionValue);
 					Log.info("从测试步骤sheet中读取的操作值是："+value);
+					System.out.println("从测试步骤sheet中读取的操作值是："+value);
+					
 					//执行测试步骤
-					execute_Actions();
+					int i = 0;
+					do{
+						execute_Actions();
+						Thread.sleep(8000);
+						if(testResult == true){
+							//如果测试步骤都成功执行完成，则设定测试用例为pass
+							ExcelUtil.setCellData(Constants.Sheet_TestSuite, testCaseNo, Constants.Col_TestSuiteTestResult, "Pass");
+							Log.endTestCase(testCaseID);
+							break;
+						}
+						i++;
+					}while(i<Constants.retryNum);
 					
 					if(testResult == false){
 						//如果测试用例中任何一个步骤执行失败，则设定测试用例为fail
@@ -74,12 +95,6 @@ public class TestSuite {
 						break;
 					}
 				}
-				if(testResult == true){
-					//如果测试步骤都成功执行完成，则设定测试用例为pass
-					ExcelUtil.setCellData(Constants.Sheet_TestSuite, testCaseNo, Constants.Col_TestSuiteTestResult, "Pass");
-					Log.endTestCase(testCaseID);
-				}
-				
 			}
 		}
 	}
@@ -89,7 +104,9 @@ public class TestSuite {
 		try{
 			for(int i=0;i<method.length;i++){
 				if(method[i].getName().equals(keyword)){
-					method[i].invoke(keyWordsAction, locatorExpression,value);
+					System.out.println("方法名称为："+method[i].getName());
+					method[i].invoke(keyWordsaction,locatorExpression,value);
+					System.out.println("---------测试步骤执行完成-----------");
 					if(testResult == true){
 						//当前测试步骤执行成功时，则设定改测试步骤测试结果为pass
 						ExcelUtil.setCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_TestStepsTestResult, "Pass");
@@ -104,13 +121,22 @@ public class TestSuite {
 				}
 			}
 		}catch(Exception e){
-			Assert.fail("执行出现异常，测试用例执行失败！");
+			AssertJUnit.fail("执行出现异常，测试用例执行失败！");
 		}
 	}
 	
 	@BeforeClass
 	public void BeforeClass(){
-		DOMConfigurator.configure("log4j.xml");
+		BasicConfigurator.configure();
 	}
-
+	
+//	public static void main(String args[]){
+//		Logger logger = Logger.getLogger(TestSuite.class.getName());
+//		BasicConfigurator.configure();
+//		//Log.startTestCase("测试开始执行");
+//		logger.info("开始测试步骤");
+//		logger.debug("开始debug");
+//		logger.error("测试报错");
+//	}
+	
 }

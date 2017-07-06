@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import org.openqa.selenium.By;
 
+
 public class ObjectMap {
 	
 	Properties properties;
@@ -22,8 +23,8 @@ public class ObjectMap {
 		}
 	}
 	
-	public By getLocator(String ElementNameInpropFile) throws Exception{
-		String locator = properties.getProperty(ElementNameInpropFile);
+	public By getLocator(String elementName) throws Exception{
+		String locator = properties.getProperty(elementName);
 		String locatorType = locator.split(">")[0];
 		String locatorValue = locator.split(">")[1];
 		locatorValue = new String(locatorValue.getBytes("ISO-8859-1"),"UTF-8");
