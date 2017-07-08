@@ -30,5 +30,12 @@ public class Log {
 	public static void debug(String message){
 		logger.debug(message);
 	}
+	
+//	public static void main(String args[]){
+//		//Log log = new Log();
+//		BasicConfigurator.configure();
+//		Log.startTestCase("开始测试");
+//		Log.info("第一步");
+//	}
 
 }

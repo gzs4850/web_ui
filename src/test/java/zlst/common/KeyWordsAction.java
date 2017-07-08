@@ -1,6 +1,6 @@
 package zlst.common;
 
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -22,7 +22,7 @@ public class KeyWordsAction {
 	public static WebDriver driver;
 	
 	static{
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure(Constants.Path_LogPro);
 	}
 	
 	//打开浏览器

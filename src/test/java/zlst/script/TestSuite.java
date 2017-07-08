@@ -3,7 +3,7 @@ package zlst.script;
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
-import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.PropertyConfigurator;
 import org.testng.AssertJUnit;
 import java.lang.reflect.Method;
 
@@ -51,7 +51,7 @@ public class TestSuite {
 			if(testCaseRunFlag.equalsIgnoreCase("y")){
 				//打印测试用例开始执行
 				Log.startTestCase(testCaseID);
-				//设定当前结果为true
+				//设定默认测试结果为true
 				testResult = true;
 				//在“测试步骤”sheet中，获取当前测试用例的第一个测试步骤行号
 				testStep = ExcelUtil.getFirstRowContainsTestCaseID(Constants.Sheet_TestSteps, testCaseID, Constants.Col_TestCaseID);
@@ -59,25 +59,20 @@ public class TestSuite {
 				testLastStep = ExcelUtil.getTestCaseLastStepRow(Constants.Sheet_TestSteps, testCaseID, testStep);
 				
 				for(;testStep < testLastStep;testStep++){
-					System.out.println("-------正在执行第"+testStep+"行的测试步骤--------");
 					//获取关键字
 					keyword = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_KeyWordAction);
 					Log.info("从测试步骤sheet中读取的关键字是："+keyword);
-					System.out.println("从测试步骤sheet中读取的关键字是："+keyword);
 					//获取定位表达式
 					locatorExpression = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_LocatorExpression);
 					Log.info("从测试步骤sheet中读取的定位表达式是："+locatorExpression);
-					System.out.println("从测试步骤sheet中读取的定位表达式是："+locatorExpression);
 					//获取操作值
 					value = ExcelUtil.getCellData(Constants.Sheet_TestSteps, testStep, Constants.Col_ActionValue);
 					Log.info("从测试步骤sheet中读取的操作值是："+value);
-					System.out.println("从测试步骤sheet中读取的操作值是："+value);
 					
 					//执行测试步骤
 					int i = 0;
 					do{
 						execute_Actions();
-						Thread.sleep(8000);
 						if(testResult == true){
 							//如果测试步骤都成功执行完成，则设定测试用例为pass
 							ExcelUtil.setCellData(Constants.Sheet_TestSuite, testCaseNo, Constants.Col_TestSuiteTestResult, "Pass");
@@ -127,16 +122,7 @@ public class TestSuite {
 	
 	@BeforeClass
 	public void BeforeClass(){
-		BasicConfigurator.configure();
+		PropertyConfigurator.configure(Constants.Path_LogPro);
 	}
-	
-//	public static void main(String args[]){
-//		Logger logger = Logger.getLogger(TestSuite.class.getName());
-//		BasicConfigurator.configure();
-//		//Log.startTestCase("测试开始执行");
-//		logger.info("开始测试步骤");
-//		logger.debug("开始debug");
-//		logger.error("测试报错");
-//	}
 	
 }

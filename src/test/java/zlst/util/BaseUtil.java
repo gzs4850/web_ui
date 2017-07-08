@@ -54,9 +54,9 @@ public class BaseUtil {
 			if (!new File(picDir).exists()) {
 				FileUtil.createDir(picDir);
 			}
-			String picPath = picDir + "-" + String.valueOf(DateUtil.getHour(new Date())) + "-"
+			String picPath = picDir + System.getProperty("file.separator") + String.valueOf(DateUtil.getHour(new Date())) + "-"
 					+ String.valueOf(DateUtil.getMinute(new Date())) + "-"
-					+ String.valueOf(DateUtil.getSecond(new Date()));
+					+ String.valueOf(DateUtil.getSecond(new Date())) + ".png";
 			// 进行截图，并将文件内容保存在srcFile对象中
 			File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 			// 生成截图文件

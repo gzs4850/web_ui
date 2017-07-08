@@ -6,6 +6,8 @@ public class Constants {
 	
 	//测试用例地址
 	public static final String Path_ExcelFile = curPath+"/src/test/java/zlst/data/测试用例.xlsx";
+	//log4j配置文件地址
+	public static final String Path_LogPro = curPath+"/log4j.properties";
 	//截图地址
 	public static final String Path_pic = curPath+"/pic/";
 	//测试用例序号 0-第一列
